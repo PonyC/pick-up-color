@@ -2,7 +2,7 @@
  <view class="content p-card p-flex-v-c">
   <text class="tip" wx:if="{{!image}}">还没有上传图片哦！_(:з」∠)_</text>
   <view class="box p-flex-v-c" wx:else>
-    <image src="{{image}}"  mode="aspectFit" />
+    <image class="img" src="{{image}}" mode="aspectFit" />
     <view class="p-flex-v-c color-group">
       <view class="p-flex-h-sa color-row" wx:for="{{hex}}" bindlongpress="copy" data-index="{{index}}">
         <view class="color" style="background-color: {{item}};"></view>
