@@ -1,0 +1,42 @@
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+input,
+button,
+textarea {
+  appearance: none;
+  background: transparent;
+}
+
+button {
+  line-height: inherit;
+}
+
+button::after {
+  border: 0;
+}
+
+
+.p-card{
+  width: 100%;
+  border-radius: 24rpx;
+  box-shadow: 0rpx 8rpx 60rpx 0rpx rgba(0,0,0,0.06);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.p-flex{
+  &-v-c{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  &-h-sa{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+}
