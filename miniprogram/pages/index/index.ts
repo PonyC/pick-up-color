@@ -23,12 +23,11 @@ Page({
           src: img.tempFilePath,
           success:async(res) =>{
             img = { ...img, ...res }
-            const {palette,hex,rgb} = await ColorThief.getPalette({
-              canvasId: 'canvas',
-              sourceImage: img,
-              colorCount: 5,
-              quality: 10
-            })
+            const params = { canvasId: 'canvas',
+            sourceImage: img,
+            colorCount: 5,
+            quality: 10}
+            const {palette,hex,rgb} = await ColorThief.getPalette(params)
             this.setData({ image: img.tempFilePath, palette,hex,rgb })
           }
         })
