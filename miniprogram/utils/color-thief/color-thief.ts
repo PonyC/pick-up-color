@@ -9,8 +9,6 @@ interface GetPaletteParams {
 }
 
 
-
-
 const CanvasImage = (canvasId: string, image: Image) => {
   let canvas: Canvas = null, ctx: CanvasContext = null, width: number = 0, height: number = 0, imageData:array = null;
   return new Promise((reslove)=>{
@@ -64,7 +62,6 @@ let getPalette = async ({ canvasId, sourceImage, colorCount, quality }: GetPalet
   });
 
   let rgb = palette.map((item:number)=>item.toString())
-  
   return {
     palette,
     hex,

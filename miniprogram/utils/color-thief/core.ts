@@ -4,7 +4,7 @@
  * 获取图片像素数组
  * @param imgData  - 图片的数据
  * @param pixelCount - 图片面积
- * @param quality - 色值的分部数量 （1-10）
+ * @param quality - 每几个色码抓取一次色值 （1-10）
  */
 function createPixelArray(imgData:string, pixelCount:number, quality:number) {
   const pixels:string = imgData;

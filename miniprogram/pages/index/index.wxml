@@ -11,7 +11,8 @@
       </view>
     </view>
     <text class="tip" style="margin-top:32rpx;">长按颜色复制单行</text>
-    <view class="copyAll" bindtap="copyAll">复制全部色值</view>
+    <view class="copyAll" bindtap="copyAll">复制全部色值
+    </view>
   </view>
  </view>
  <view class="upLoad p-card p-flex-v-c" bindtap="chooseImage">{{image ? '重新传图':'选择图片'}}</view>

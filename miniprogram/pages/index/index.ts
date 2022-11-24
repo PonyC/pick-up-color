@@ -27,7 +27,7 @@ Page({
               canvasId: 'canvas',
               sourceImage: img,
               colorCount: 5,
-              quality: 5
+              quality: 10
             })
             console.log(palette,hex)
             this.setData({ image: img.tempFilePath, palette,hex,rgb })
