@@ -8,9 +8,13 @@ interface GetPaletteParams {
   quality: number
 }
 
-
 const CanvasImage = (canvasId: string, image: Image) => {
-  let canvas: Canvas = null, ctx: CanvasContext = null, width: number = 0, height: number = 0, imageData:array = null;
+  let canvas:Canvas = null
+  let ctx:CanvasContext = null
+  let width:number = 0
+  let height:number = 0
+  let imageData:array = []
+
   return new Promise((reslove)=>{
     wx.createSelectorQuery()
     .select(`#${canvasId}`)
@@ -20,12 +24,12 @@ const CanvasImage = (canvasId: string, image: Image) => {
     }).exec(async (res) => {
       canvas = res[0].node
       ctx = canvas.getContext('2d')
-      width = image.width
-      height = image.height
+      width = canvas.width = image.width
+      height = canvas.height = image.height
       const img = await drawImage(canvas, image.path)
       ctx.drawImage(img, 0, 0, width, height);
       imageData = ctx.getImageData(0, 0, width, height)
-      reslove({ canvas, ctx, width, height, imageData})
+      reslove({ canvas, ctx, width, height,imageData})
     })
   })
 }
@@ -50,11 +54,12 @@ let getPalette = async ({ canvasId, sourceImage, colorCount, quality }: GetPalet
   });
 
   const image:any = await CanvasImage(canvasId, sourceImage)
-  const imageData = image.imageData; // 图片数据
+  const imageData  = image.imageData;// 图片数据
   const pixelCount = image.width * image.height; // 面积
   const pixelArray = core.createPixelArray(imageData.data, pixelCount, options.quality);
+
   const cmap = quantize(pixelArray, options.colorCount);
-  const  palette = cmap? cmap.palette() : null;
+  const palette = cmap? cmap.palette() : null;
   let hex:array = []
 
   palette.forEach((el:array) => {
@@ -62,6 +67,7 @@ let getPalette = async ({ canvasId, sourceImage, colorCount, quality }: GetPalet
   });
 
   let rgb = palette.map((item:number)=>item.toString())
+
   return {
     palette,
     hex,
