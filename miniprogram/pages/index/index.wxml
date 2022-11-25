@@ -4,18 +4,20 @@
   <view class="box p-flex-v-c" wx:else>
     <image class="img" src="{{image}}" mode="aspectFit" />
     <view class="p-flex-v-c color-group">
-      <view class="p-flex-h-sa color-row" wx:for="{{hex}}" bindlongpress="copy" data-index="{{index}}">
+      <view class="p-flex-h-sb color-row" wx:for="{{hex}}" bindlongpress="copy" data-index="{{index}}">
         <view class="color" style="background-color: {{item}};"></view>
-        <text style="flex:1;text-align: center;">{{item}}</text>
-        <text style="flex:1; text-align:right;">rgb({{rgb[index]}})</text>
+        <view class="desc">
+          <text>{{item}}</text>
+          <text>rgb({{rgb[index]}})</text>
+        </view>
       </view>
     </view>
-    <text class="tip" style="margin-top:32rpx;">长按颜色复制单行</text>
-    <view class="copyAll" bindtap="copyAll">复制全部色值
-    </view>
+    <text class="tip">长按颜色复制单行</text>
+    <view class="copyAll" bindtap="copyAll">复制全部色值</view>
   </view>
  </view>
  <view class="upLoad p-card p-flex-v-c" bindtap="chooseImage">{{image ? '重新传图':'选择图片'}}</view>
 </view>
 
-<canvas type="2d" id="canvas" style="position:fixed;bottom:20vh;width: {{canvasWidth}}px;height: {{canvasHeight}}px; z-index: 9999; right: -999999999rpx;" />
+<canvas type="2d" id="canvas" style="position:fixed;z-index: 9999; right: -999999999rpx;" />
+<canvas type="2d" id="shareCard" style="position:fixed;z-index: 9999; right: -999999999rpx;" />

@@ -1,12 +1,11 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/logs/logs"
+    "pages/index/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "传图拾色",
+    "navigationBarTitleText": "拾图色",
     "navigationBarTextStyle": "black"
   },
   "style": "v2",

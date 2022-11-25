@@ -13,7 +13,7 @@ const CanvasImage = (canvasId: string, image: Image) => {
   let ctx:CanvasContext = null
   let width:number = 0
   let height:number = 0
-  let imageData:array = []
+  let imageData:ImageData = {}
 
   return new Promise((reslove)=>{
     wx.createSelectorQuery()
@@ -60,9 +60,9 @@ let getPalette = async ({ canvasId, sourceImage, colorCount, quality }: GetPalet
 
   const cmap = quantize(pixelArray, options.colorCount);
   const palette = cmap? cmap.palette() : null;
-  let hex:array = []
+  let hex:string[] = []
 
-  palette.forEach((el:array) => {
+  palette.forEach((el:number[]) => {
     hex.push(rgbToHex(el[0],el[1],el[2]))
   });
 
@@ -77,7 +77,7 @@ let getPalette = async ({ canvasId, sourceImage, colorCount, quality }: GetPalet
 
 
 let componentToHex = (c:number)=>{
- const hex = c.toString(16)
+ const hex:string = c.toString(16)
  return hex.length === 1 ? "0" + hex : hex;
 }
 
