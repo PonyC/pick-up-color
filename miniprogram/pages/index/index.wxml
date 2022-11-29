@@ -2,7 +2,7 @@
  <view class="content p-card p-flex-v-c">
   <text class="tip" wx:if="{{!image}}">还没有上传图片哦！_(:з」∠)_</text>
   <view class="box p-flex-v-c" wx:else>
-    <image class="img" src="{{image}}" mode="aspectFit" />
+    <image class="img" src="{{image.tempFilePath}}" mode="aspectFit" />
     <view class="p-flex-v-c color-group">
       <view class="p-flex-h-sb color-row" wx:for="{{hex}}" bindlongpress="copy" data-index="{{index}}">
         <view class="color" style="background-color: {{item}};"></view>
@@ -13,11 +13,30 @@
       </view>
     </view>
     <text class="tip">长按颜色复制单行</text>
-    <view class="copyAll" bindtap="copyAll">复制全部色值</view>
+    <view class="actions">
+      <view class="action-btn" bindtap="copyAll">复制全部色值</view>
+      <view class="action-btn" bindtap="openPosterPreviewPopup">分享</view>
+    </view>
   </view>
  </view>
  <view class="upLoad p-card p-flex-v-c" bindtap="chooseImage">{{image ? '重新传图':'选择图片'}}</view>
 </view>
 
+<!-- 绘制上传的图片，用来获取色值 -->
 <canvas type="2d" id="canvas" style="position:fixed;z-index: 9999; right: -999999999rpx;" />
+
+<!-- 绘制转发自定义卡片 -->
 <canvas type="2d" id="shareCard" style="position:fixed;z-index: 9999; right: -999999999rpx;" />
+
+<!-- 绘制分享海报 -->
+<canvas type="2d" id="poster" style="position:fixed; z-index: 9999; right: -999999999rpx;" />
+
+<!-- 海报预览 -->
+<t-popup visible="{{posterPreview}}" close-on-overlay-click bind:visible-change="onVisibleChange" placement="center">
+  <view class="poster-preview">
+    <image src="{{posterPreviewImageUrl}}" mode="aspectFit" show-menu-by-longpress="{{true}}" style="border-radius: 24rpx;width:600rpx;height:600rpx;" />
+    <text class="desc">图片生成成功，长按保存或分享</text>
+  </view>
+</t-popup>
+
+<!-- <image src="{{posterPreviewImageUrl}}" mode="aspectFit" style="position:fixed;z-index: 9999;top:5vh;left:5vw;width:600rpx;height:600rpx;border-radius: 24rpx;" /> -->

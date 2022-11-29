@@ -4,10 +4,12 @@ const app:IAppOption = getApp()
 
 Page({
   data: {
-    image: '',
+    image:null,
     hex:[],
     rgb:[],
-    shareImageUrl:''
+    shareImageUrl:'',
+    posterPreview:false,
+    posterPreviewImageUrl:''
   },
 
   onLoad(){
@@ -23,7 +25,6 @@ Page({
       sizeType:['compressed'],
       success: (res) => {
         let img = res.tempFiles[0]
-
         // 获取图片信息
         wx.getImageInfo( {
           src: img.tempFilePath,
@@ -34,8 +35,7 @@ Page({
             colorCount: 5,
             quality: 10}
             const {palette,hex,rgb} = await ColorThief.getPalette(params)
-            this.setData({ image: img.tempFilePath, palette,hex ,rgb })
-            // this.drawShare(hex)
+            this.setData({image:img, palette, hex ,rgb })
           }
         })
       },
@@ -45,21 +45,50 @@ Page({
     })
   },
 
-  // 分享自定义卡片
-  async drawShare(hex = null){
+  // 绘制自定义卡片
+  async drawShare(){
+    console.log('绘制自定义卡片')
     let imageUrl:any = ''
     imageUrl = await drawShareCard({
+      canvasId:'shareCard',
       ratio:app.globalData.pixelRatio,
       canvasWidth:app.globalData.shardanvasWidth,
       canvasHeight:app.globalData.shardanvasHeight,
-      data:hex 
+      data:this.data.hex.length > 0 ? this.data.hex : null
     })
     this.setData({shareImageUrl:imageUrl})
   },
 
   // 绘制海报
-  drawPoster(){
+  async drawPoster(){
+    console.log('绘制海报')
+    let imageUrl:any = ''
+    imageUrl = await drawShareCard({
+      canvasId:'poster',
+      ratio:app.globalData.pixelRatio,
+      canvasWidth:300,
+      canvasHeight:300,
+      data:{
+        img:this.data.image,
+        hex:this.data.hex,
+        reg:this.data.rgb
+      }
+    })
+    this.setData({posterPreviewImageUrl:imageUrl})
+  },
 
+  // 打开海报预览
+  openPosterPreviewPopup(){
+    this.drawPoster()
+    this.setData({posterPreview: true});
+  },
+
+  // 海报弹窗开关状态
+  onVisibleChange(e){
+    console.log(e)
+    this.setData({
+      posterPreview: e.detail.visible,
+    });
   },
 
 

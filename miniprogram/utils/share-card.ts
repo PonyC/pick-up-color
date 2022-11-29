@@ -2,9 +2,10 @@ let WIDTH:number = 0
 let HEIGHT:number = 0
 let RATIO:number = 0
 
-interface IdrawShareCardOptions {ratio:number,canvasWidth:number,canvasHeight:number,data:any}
+interface IdrawShareCardOptions {canvasId:string,ratio:number,canvasWidth:number,canvasHeight:number,data:any}
 
 export const drawShareCard = ({
+  canvasId,
   ratio,
   canvasWidth,
   canvasHeight,
@@ -13,9 +14,11 @@ export const drawShareCard = ({
   WIDTH = canvasWidth * ratio
   HEIGHT = canvasHeight  * ratio
   RATIO =  ratio
+  let id = `#${canvasId}`
+
   return new Promise((reslove) => {
     wx.createSelectorQuery()
-      .select('#shareCard')
+      .select(id)
       .fields({
         node: true,
         size: true,
@@ -26,13 +29,36 @@ export const drawShareCard = ({
         canvas.width = WIDTH
         canvas.height = HEIGHT
         ctx.textBaseline = 'top'
-        
-        ctx.fillStyle = '#fff'
-          ctx.fillRect(0, 0, WIDTH, HEIGHT)
 
+        if(canvasId === 'shareCard'){
+          ctx.fillStyle = '#fff'
+          ctx.fillRect(0, 0, WIDTH, HEIGHT)
           ctx.font = `bold ${22 * RATIO}px PingFang SC,Source Han Sans SC`
           ctx.fillStyle = '#474F59'
           ctx.fillText('没有设计师就没有图片_(:з」∠)_', 100, HEIGHT / 2 - 24 )
+        }
+
+        // 绘制海报
+        if(canvasId === 'poster'){
+          // 画画布
+          // drawRoundRect({ ctx, x: 0, y: 0, w: WIDTH, h: HEIGHT, r:0  })
+          // 画具体海报
+          const img = await drawImage(canvas, data.img.tempFilePath)
+          const code = await drawImage(canvas, '/static/code.png')
+          const aspect = aspectFill(data.img.width,data.img.height,WIDTH,HEIGHT) // 缩放    
+          ctx.drawImage(img,...aspect, 0, 0, WIDTH, HEIGHT) 
+          drawRoundRect({ ctx, x: 0, y: HEIGHT/2, w: WIDTH, h: HEIGHT / 2, r:0 })
+          drawPoster(ctx, data)
+          const codeWidth = 2172 * 0.3
+          const codeHeight = 800 * 0.3
+          ctx.drawImage(
+            code, //规定要使用的图像、画布或视频。
+            0, 0, //开始剪切的 x 坐标位置。
+            2172, 800,  //被剪切图像的高度。
+            (WIDTH - codeWidth) / 2, (HEIGHT - codeHeight) - 32,//在画布上放置图像的 x 、y坐标位置。
+            2172 * 0.3, 800 * 0.3  //要使用的图像的宽度、高度
+          );
+        }
 
         // 将画布转为地址
         canvasToTempFilePath(canvas, reslove)
@@ -40,8 +66,34 @@ export const drawShareCard = ({
   })
 }
 
-const darwContent = (ctx:CanvasContext,data)=>{
-  // TODO:绘制主体
+const drawTitle = (ctx:CanvasContext)=>{
+  // TODO:
+  ctx.font = `bold ${24 * RATIO}px PingFang SC,Source Han Sans SC`
+  ctx.fillStyle = '#000'
+  ctx.fillText('拾图色', 0, 0)
+}
+
+const drawPoster = (ctx:CanvasContext,data:any)=>{
+  const r = 50 // 圆半径
+  const d = r * 2 // 圆半径
+  const itemWidth = WIDTH / 5 // 每个item的宽度
+  const startXCenter = itemWidth / 2 // 首个圆的圆心位置
+  const marginTop = 16
+  const startY = HEIGHT / 2 + marginTop
+  data.hex.forEach((item:string,index:number) => {
+    // let y = startY + (d + marginTop) * (index + 1) // 每次循环 每行的位置 = 开始位置 + 行高(直径*当前个数) + 上边距
+    const currentCenter = startXCenter + itemWidth * index  // 当前圆心位置
+    const currentItemStratX =  itemWidth * index // 当前块的X起始点
+    ctx.beginPath(); 
+    ctx.arc(currentCenter, startY, r, 0,2*Math.PI)
+    ctx.fillStyle = item; 
+    ctx.closePath(); 
+    ctx.fill(); 
+    ctx.font = `bold ${10 * RATIO}px PingFang SC,Source Han Sans SC`
+    ctx.fillStyle = '#000'
+    const textX = currentItemStratX + ( itemWidth - ctx.measureText(item).width) / 2 // 当前块的X起始点 + (当前块宽度 - 文字宽度) / 2
+    ctx.fillText(item, textX , (startY + r + marginTop))
+  });
 }
 
 /**
@@ -53,8 +105,8 @@ const darwContent = (ctx:CanvasContext,data)=>{
   * @param {*} r 圆角半径
   * @param {*} ctx 画板上下文
   */
-const darwRoundRect = ({ ctx, x, y, w, h, r }) => {
-  ctx.save();
+const drawRoundRect = ({ ctx, x, y, w, h, r }) => {
+  ctx.save()
   ctx.beginPath();
 
   // 左上弧线
@@ -78,12 +130,9 @@ const darwRoundRect = ({ ctx, x, y, w, h, r }) => {
   ctx.lineTo(x + w - r, y);
   ctx.lineTo(x + r, y);
 
-  let linearGradient = ctx.createLinearGradient(0,0,WIDTH,0); //horizontal gradient
-  linearGradient.addColorStop(0  , 'rgba(152, 175, 255, 1)');
-  linearGradient.addColorStop(1  , 'rgba(65, 83, 246, 1)');
-
-  ctx.fillStyle = linearGradient;
+  ctx.fillStyle = "#F6F6F6";
   ctx.fill();
+  ctx.restore()
 }
 
 // 绘制图片
@@ -93,8 +142,44 @@ const drawImage = (canvas:Canvas, res) => {
     image.onload = () => {
       reslove(image)
     }
+    console.log(res)
     image.src = res
   })
+}
+
+const aspectFit = (imageWidth:number, imageHeight:number, canvasWidth:number, canvasHeight:number) => {
+  const imageRate = imageWidth / imageHeight
+  const canvasRate = canvasWidth / canvasHeight
+  let dx, dy, dw, dh
+  
+  if (imageRate >= canvasRate) {
+    dw = canvasWidth
+    dh = canvasWidth / imageRate
+  } else {
+    dh = canvasHeight
+    dw = canvasHeight * imageRate
+  }
+  dx = (canvasWidth - dw) / 2
+  dy = (canvasHeight - dh) / 2
+  return [dx, dy, dw, dh]
+}
+
+const aspectFill = (imageWidth:number, imageHeight:number, canvasWidth:number, canvasHeight:number) => {
+  const imageRate = imageWidth / imageHeight
+  const canvasRate = canvasWidth / canvasHeight
+  let sx, sy, sw, sh;
+  if (imageRate >= canvasRate) {
+    sw = imageHeight * canvasRate
+    sh = imageHeight
+    sx = (imageWidth - sw) / 2
+    sy = 0
+  } else {
+    sh = imageWidth / canvasRate
+    sw = imageWidth
+    sx = 0
+    sy = (imageHeight - sh) / 2
+  }
+  return [sx, sy, sw, sh]
 }
 
 // 将画布转为地址
