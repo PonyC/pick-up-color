@@ -25,17 +25,20 @@ Page({
       sizeType:['compressed'],
       success: (res) => {
         let img = res.tempFiles[0]
+        let that = this
         // 获取图片信息
         wx.getImageInfo( {
           src: img.tempFilePath,
-          success:async(res) =>{
+          success(res){
+            console.log('success===>',res)
             img = { ...img, ...res }
             const params = { canvasId: 'canvas',
             sourceImage: img,
             colorCount: 5,
             quality: 10}
-            const {palette,hex,rgb} = await ColorThief.getPalette(params)
-            this.setData({image:img, palette, hex ,rgb })
+            ColorThief.getPalette(params).then(({palette,hex,rgb})=>{
+              that.setData({image:img, palette, hex ,rgb })
+            })
           }
         })
       },
